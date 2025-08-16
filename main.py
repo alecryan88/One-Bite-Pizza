@@ -1,6 +1,6 @@
 import requests
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 import boto3
 import io
 import json

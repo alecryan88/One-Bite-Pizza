@@ -10,6 +10,7 @@ import argparse
 from helpers import get_date_range
 
 
+# Parse command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--start_date', type=str, required=True)
 parser.add_argument('--end_date', type=str, required=False)

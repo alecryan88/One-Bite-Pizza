@@ -8,6 +8,8 @@ env:
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     AWS_REGION: us-east-1
     BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+    ENV: ci
+
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -31,5 +33,6 @@ jobs:
               run: uvx ruff check
 
             - name: Run script
-              
+              env:
+                ENV: ${{ env.ENV }}
               run: uv run main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

@@ -24,6 +24,9 @@ parser.add_argument('--start_date', type=str, required=True)
 parser.add_argument('--end_date', type=str, required=False)
 args = parser.parse_args()
 
+logging.info(f"Start date: {args.start_date}")
+logging.info(f"End date: {args.end_date}")
+
 
 def load_config(file_path: str) -> dict:
     with open(file_path, 'r') as file:

@@ -10,7 +10,12 @@ import argparse
 from helpers import get_date_range
 import os
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+
 env = os.getenv('ENV', 'dev')
+logging.info(f"Running for {env} environment")
 
 # Parse command line arguments
 parser = argparse.ArgumentParser()
@@ -31,9 +36,6 @@ config = load_config('config.yml')
 URL = config['api']['url']
 LIMIT = config['api']['limit']
 BUCKET_NAME = config['aws']['bucket_name']
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 
 
 def convert_str_to_datetime(date_str: str) -> datetime:

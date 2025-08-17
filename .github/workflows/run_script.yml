@@ -2,6 +2,7 @@ name: run_script
 on: push
 
 env:
+    # pass in the start and end date for the most recent days
     START_DATE: $(date -d "3 days ago" +'%Y-%m-%d')
     END_DATE: $(date -d "1 day ago" +'%Y-%m-%d')
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

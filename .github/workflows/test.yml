@@ -19,6 +19,10 @@ jobs:
             - name: Install dependencies
               run: uv sync
 
-        
             - name: Lint files
               run: uvx ruff check
+
+            - name: Run script
+              env:
+                TODAY: $(git log -1 --format=%cd --date=format:%Y%m%d)
+              run: echo $TODAY

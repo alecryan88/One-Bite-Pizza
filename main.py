@@ -110,7 +110,12 @@ def main(args: argparse.Namespace) -> None:
         buffer = io.StringIO()
         buffer.write(json.dumps(reviews))
 
-        s3.put_object(Bucket=BUCKET_NAME, Key=f"data/{env}/date={date}.json", Body=buffer.getvalue())
+        # Create the file name
+        file_name = f"data/{env}/date={date}.json"
+
+        logging.info(f"Uploading {file_name} to s3")
+        # Upload the data to s3
+        s3.put_object(Bucket=BUCKET_NAME, Key=file_name, Body=buffer.getvalue())
 
     logging.info("Succesfully Uploaded reviews to s3")
 

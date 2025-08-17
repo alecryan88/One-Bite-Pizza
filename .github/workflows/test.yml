@@ -1,5 +1,13 @@
 name: test
 on: push
+
+env:
+    START_DATE: $(date -d "3 days" +'%Y-%m-%d')
+    END_DATE: $(date -d "1 day" +'%Y-%m-%d')
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_REGION: us-east-1
+    BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -23,7 +31,5 @@ jobs:
               run: uvx ruff check
 
             - name: Run script
-              env:
-                START_DATE: $(date -d "3 day ago" +'%Y-%m-%d')
-                END_DATE: $(date -d "1 day ago" +'%Y-%m-%d')
+              
               run: uv run main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

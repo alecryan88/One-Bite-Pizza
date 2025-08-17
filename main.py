@@ -8,12 +8,24 @@ import logging
 import yaml
 import argparse
 from helpers import get_date_range
+import os
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
+# Get the environment
+env = os.getenv('ENV', 'dev')
+
+logging.info(f"Running for {env} environment")
+
+# Parse command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--start_date', type=str, required=True)
 parser.add_argument('--end_date', type=str, required=False)
 args = parser.parse_args()
+
+logging.info(f"Start date: {args.start_date}")
+logging.info(f"End date: {args.end_date}")
 
 
 def load_config(file_path: str) -> dict:
@@ -28,9 +40,6 @@ config = load_config('config.yml')
 URL = config['api']['url']
 LIMIT = config['api']['limit']
 BUCKET_NAME = config['aws']['bucket_name']
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 
 
 def convert_str_to_datetime(date_str: str) -> datetime:
@@ -82,30 +91,34 @@ def get_all_reviews(start_date: datetime, end_date: datetime) -> list[dict]:
     print(date_range)
     print(reviews_by_date.keys())
 
-    filtered_reviews_by_date = { k:v for k, v in reviews_by_date.items() if k in date_range}
+    filtered_reviews_by_date = {k: v for k, v in reviews_by_date.items() if k in date_range}
 
-    print(" YEEEEET ", filtered_reviews_by_date.keys())
     # Print the number of reviews for each day
     for date, reviews in filtered_reviews_by_date.items():
         logging.info(f"{date}: {len(reviews)}")
 
-    return reviews_by_date
+    return filtered_reviews_by_date
 
 
 def main(args: argparse.Namespace) -> None:
     # Get reviews for the date range. If end_date is not provided, use start_date for both.
     if args.end_date is None:
         args.end_date = args.start_date
-    reviews_by_date = get_all_reviews(datetime.strptime(args.start_date, "%Y-%m-%d"), datetime.strptime(args.end_date, "%Y-%m-%d"))
+    filtered_reviews_by_date = get_all_reviews(datetime.strptime(args.start_date, "%Y-%m-%d"), datetime.strptime(args.end_date, "%Y-%m-%d"))
 
     # Load data to s3
     s3 = boto3.client('s3')
 
-    for date, reviews in reviews_by_date.items():
+    for date, reviews in filtered_reviews_by_date.items():
         buffer = io.StringIO()
         buffer.write(json.dumps(reviews))
 
-        s3.put_object(Bucket=BUCKET_NAME, Key=f"data/date={date}.json", Body=buffer.getvalue())
+        # Create the file name
+        file_name = f"data/{env}/date={date}.json"
+
+        logging.info(f"Uploading {file_name} to s3")
+        # Upload the data to s3
+        s3.put_object(Bucket=BUCKET_NAME, Key=file_name, Body=buffer.getvalue())
 
     logging.info("Succesfully Uploaded reviews to s3")
 

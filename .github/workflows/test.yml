@@ -2,8 +2,8 @@ name: test
 on: push
 
 env:
-    START_DATE: $(date -d "3 days" +'%Y-%m-%d')
-    END_DATE: $(date -d "1 day" +'%Y-%m-%d')
+    START_DATE: $(date -d "3 days ago" +'%Y-%m-%d')
+    END_DATE: $(date -d "1 day ago" +'%Y-%m-%d')
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     AWS_REGION: us-east-1

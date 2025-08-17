@@ -13,8 +13,9 @@ import os
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-
+# Get the environment
 env = os.getenv('ENV', 'dev')
+
 logging.info(f"Running for {env} environment")
 
 # Parse command line arguments

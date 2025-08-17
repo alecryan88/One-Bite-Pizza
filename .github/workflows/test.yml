@@ -24,6 +24,6 @@ jobs:
 
             - name: Run script
               env:
-                START_DATE: '2025-08-16'
-                END_DATE: '2025-08-16'
+                START_DATE: $(date -d "yesterday" +'%Y-%m-%d')
+                END_DATE: $(date -d "yesterday" +'%Y-%m-%d')
               run: uv run main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

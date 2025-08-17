@@ -24,5 +24,6 @@ jobs:
 
             - name: Run script
               env:
-                TODAY: $(git log -1 --format=%cd --date=format:%Y%m%d)
-              run: echo $TODAY
+                START_DATE: '2025-01-01'
+                END_DATE: '2025-01-01'
+              run: uv run main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

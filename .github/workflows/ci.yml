@@ -1,5 +1,8 @@
 name: run_script
-on: push
+on:
+  push:
+    branches:
+      - '!main'
 
 env:
     # pass in the start and end date for the most recent days

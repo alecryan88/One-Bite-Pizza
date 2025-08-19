@@ -5,7 +5,6 @@ import boto3
 import io
 import json
 import logging
-import yaml
 import argparse
 from helpers import get_date_range
 
@@ -15,19 +14,10 @@ parser.add_argument('--start_date', type=str, required=True)
 parser.add_argument('--end_date', type=str, required=False)
 args = parser.parse_args()
 
-
-def load_config(file_path: str) -> dict:
-    with open(file_path, 'r') as file:
-        return yaml.safe_load(file)
-
-
-# Load the configuration
-config = load_config('config.yml')
-
 # Constants from config
-URL = config['api']['url']
-LIMIT = config['api']['limit']
-BUCKET_NAME = config['aws']['bucket_name']
+URL = 'https://api.onebite.app/review'
+LIMIT = 50
+BUCKET_NAME = 'one-bite-reviews'
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

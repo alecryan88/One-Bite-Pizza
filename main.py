@@ -5,27 +5,16 @@ import boto3
 import io
 import json
 import logging
-import argparse
-from helpers import get_date_range
+
 import os
+
+from modules.config import Settings
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 # Get the environment
 env = os.getenv('ENV', 'dev')
 logging.info(f'Running for {env} environment')
-# Parse command line arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('--start_date', type=str, required=True)
-parser.add_argument('--end_date', type=str, required=False)
-args = parser.parse_args()
-logging.info(f'Start date: {args.start_date}')
-logging.info(f'End date: {args.end_date}')
-
-# Constants from config
-URL = 'https://api.onebite.app/review'
-LIMIT = 50
-BUCKET_NAME = 'one-bite-pizza-reviews'
 
 
 def convert_str_to_datetime(date_str: str) -> datetime:
@@ -42,7 +31,7 @@ def get_review_offset(url: str, offset: int, limit: int) -> list[dict]:
         return []
 
 
-def get_all_reviews(start_date: datetime, end_date: datetime) -> list[dict]:
+def get_all_reviews(settings: Settings) -> list[dict]:
     """Get all reviews from the API for specified date range"""
     reviews_list = []
     # Start at the first page
@@ -50,8 +39,8 @@ def get_all_reviews(start_date: datetime, end_date: datetime) -> list[dict]:
 
     # Loop through pages until we've passed the date we want
     while True:
-        offset = page * LIMIT
-        reviews = get_review_offset(URL, offset, LIMIT)
+        offset = page * settings.limit
+        reviews = get_review_offset(settings.api_url, offset, settings.limit)
         reviews_list.extend(reviews)
 
         # Check the last review's date of the page to determine if we've
@@ -59,7 +48,7 @@ def get_all_reviews(start_date: datetime, end_date: datetime) -> list[dict]:
         last_ts_of_page = convert_str_to_datetime(reviews[-1]['date'])
 
         # Break loop if we've passed the date we want to load
-        if last_ts_of_page.date() < start_date.date():
+        if last_ts_of_page.date() < settings.start_date_dt.date():
             break
         else:
             page += 1
@@ -72,12 +61,9 @@ def get_all_reviews(start_date: datetime, end_date: datetime) -> list[dict]:
         dt = datetime.fromisoformat(review['date'].replace('Z', '+00:00'))
         reviews_by_date[dt.strftime('%Y-%m-%d')].append(review)
 
-    date_range = get_date_range(start_date, end_date)
-
-    print(date_range)
-    print(reviews_by_date.keys())
-
-    filtered_reviews_by_date = {k: v for k, v in reviews_by_date.items() if k in date_range}
+    filtered_reviews_by_date = {
+        k: v for k, v in reviews_by_date.items() if k in settings.date_range
+    }
 
     # Print the number of reviews for each day
     for date, reviews in filtered_reviews_by_date.items():
@@ -86,14 +72,12 @@ def get_all_reviews(start_date: datetime, end_date: datetime) -> list[dict]:
     return filtered_reviews_by_date
 
 
-def main(args: argparse.Namespace) -> None:
-    # Get reviews for the date range. If end_date is not provided, use start_date for both.
-    if args.end_date is None:
-        args.end_date = args.start_date
-    filtered_reviews_by_date = get_all_reviews(
-        datetime.strptime(args.start_date, '%Y-%m-%d'),
-        datetime.strptime(args.end_date, '%Y-%m-%d'),
-    )
+def main() -> None:
+    # Get settings from environment variables and command line arguments
+    settings = Settings()
+
+    # Get reviews filtered by the provided the date range in setings
+    filtered_reviews_by_date = get_all_reviews(settings)
 
     # Load data to s3
     s3 = boto3.client('s3')
@@ -101,16 +85,13 @@ def main(args: argparse.Namespace) -> None:
     for date, reviews in filtered_reviews_by_date.items():
         buffer = io.StringIO()
         buffer.write(json.dumps(reviews))
-
         # Create the file name
         file_name = f'data/{env}/date={date}.json'
-
-        logging.info(f'Uploading {file_name} to s3')
         # Upload the data to s3
-        s3.put_object(Bucket=BUCKET_NAME, Key=file_name, Body=buffer.getvalue())
+        s3.put_object(Bucket=settings.bucket_name, Key=file_name, Body=buffer.getvalue())
 
     logging.info('Succesfully Uploaded reviews to s3')
 
 
 if __name__ == '__main__':
-    main(args)
+    main()

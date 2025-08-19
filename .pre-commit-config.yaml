@@ -1,0 +1,7 @@
+repos:
+  # Ruff repo (provides both lint + format hooks)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9   # Pin the version of Ruff you want
+    hooks:
+      - id: ruff             # Lint (fail on errors)
+      - id: ruff-format      # Format check (like black --check)

@@ -1,0 +1,42 @@
+name: run_prod_script
+on:
+    schedule:
+      - cron: "10 10 * * *"   # Every day at 10:10am
+    workflow_dispatch: {}     # allow manual runs
+
+env:
+    # pass in the start and end date for the most recent day
+    # These are the same in prod because we are running this for every day
+    START_DATE: $(date +'%Y-%m-%d')
+    END_DATE: $(date +'%Y-%m-%d')
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_REGION: us-east-1
+    ENV: prod
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                python-version-file: ".python-version"
+
+            - name: Install uv
+              uses: astral-sh/setup-uv@v6
+              with:
+                version: 0.6.14
+
+            - name: Install dependencies
+              run: uv sync
+
+            - name: Lint files
+              run: uvx ruff check
+
+            - name: Run script
+              env:
+                ENV: ${{ env.ENV }}
+              run: uv run main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

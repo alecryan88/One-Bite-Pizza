@@ -1,7 +1,7 @@
 [project]
 name = "one-bite-pizza"
 version = "0.1.0"
-description = "Add your description here"
+description = "ETL pipeline for extracting One Bite Data from API and loading to s3"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -8,6 +8,7 @@ import logging
 
 import os
 
+# Config
 from modules.config import Settings
 
 # Configure logging

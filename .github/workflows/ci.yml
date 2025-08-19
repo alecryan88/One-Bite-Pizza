@@ -32,8 +32,8 @@ jobs:
             - name: Lint files
               run: uvx ruff check
 
-            - name: Lint files
-              run: uvx black --check . --diff
+            - name: Format files
+              run: uvx ruff format --check --diff
 
             - name: Run script
               env:

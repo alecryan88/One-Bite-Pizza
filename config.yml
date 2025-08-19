@@ -1,6 +1,0 @@
-api:
-  url: 'https://api.onebite.app/review'
-  limit: 50
-
-aws:
-  bucket_name: 'one-bite-pizza-reviews'

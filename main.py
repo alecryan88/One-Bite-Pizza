@@ -109,8 +109,7 @@ def main(args: argparse.Namespace) -> None:
         # Upload the data to s3
         s3.put_object(Bucket=BUCKET_NAME, Key=file_name, Body=buffer.getvalue())
 
-
-logging.info('Succesfully Uploaded reviews to s3')
+    logging.info('Succesfully Uploaded reviews to s3')
 
 
 if __name__ == '__main__':

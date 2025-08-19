@@ -3,4 +3,4 @@ api:
   limit: 50
 
 aws:
-  bucket_name: 'one-bite-reviews'
+  bucket_name: 'one-bite-pizza-reviews'

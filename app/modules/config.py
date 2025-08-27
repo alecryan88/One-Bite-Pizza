@@ -34,6 +34,6 @@ class Settings:
     @property
     def date_range(self):
         return [
-            self.start_date_dt + timedelta(days=x)
+            (self.start_date_dt + timedelta(days=x)).strftime('%Y-%m-%d')
             for x in range((self.end_date_dt - self.start_date_dt).days + 1)
         ]

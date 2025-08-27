@@ -6,16 +6,8 @@ import io
 import json
 import logging
 
-import os
-
 # Config
 from modules.config import Settings
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-# Get the environment
-env = os.getenv('ENV', 'dev')
-logging.info(f'Running for {env} environment')
 
 
 def convert_str_to_datetime(date_str: str) -> datetime:
@@ -66,6 +58,8 @@ def get_all_reviews(settings: Settings) -> list[dict]:
         k: v for k, v in reviews_by_date.items() if k in settings.date_range
     }
 
+    logging.info(f'Loaded {len(filtered_reviews_by_date)} reviews for {settings.date_range}')
+
     # Print the number of reviews for each day
     for date, reviews in filtered_reviews_by_date.items():
         logging.info(f'{date}: {len(reviews)}')
@@ -74,8 +68,14 @@ def get_all_reviews(settings: Settings) -> list[dict]:
 
 
 def main() -> None:
+    # Configure logging
+    logging.basicConfig(level=logging.INFO)
+
     # Get settings from environment variables and command line arguments
     settings = Settings()
+
+    # Log the environment
+    logging.info(f'Running for {settings.env} environment')
 
     # Get reviews filtered by the provided the date range in setings
     filtered_reviews_by_date = get_all_reviews(settings)
@@ -87,7 +87,7 @@ def main() -> None:
         buffer = io.StringIO()
         buffer.write(json.dumps(reviews))
         # Create the file name
-        file_name = f'data/{env}/date={date}.json'
+        file_name = f'data/{settings.env}/date={date}.json'
         # Upload the data to s3
         s3.put_object(Bucket=settings.bucket_name, Key=file_name, Body=buffer.getvalue())
 

@@ -35,4 +35,4 @@ jobs:
             - name: Run script
               env:
                 ENV: ${{ env.ENV }}
-              run: uv run main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
+              run: uv run app/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

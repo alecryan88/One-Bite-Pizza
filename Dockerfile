@@ -1,11 +1,14 @@
 FROM python:3.11-slim
 
+# Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-RUN mkdir app 
-
-COPY . /app
 WORKDIR /app
-RUN uv sync
 
-ENTRYPOINT ["uv", "run", "app/main.py"]
+COPY pyproject.toml uv.lock .python-version /app/
+COPY . /app
+RUN uv sync --frozen
+
+# Code will be mounted at runtime by scripts/docker/run.sh
+ENTRYPOINT ["uv", "run", "main.py"]
+

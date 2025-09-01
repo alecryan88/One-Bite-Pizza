@@ -89,7 +89,7 @@ def main() -> None:
         # Create the file name
         file_name = f'data/{settings.env}/date={date}.json'
         # Upload the data to s3
-        s3.put_object(Bucket=settings.bucket_name, Key=file_name, Body=buffer.getvalue())
+        s3.put_object(Bucket='one-bite-pizza-reviews', Key=file_name, Body=buffer.getvalue())
 
     logging.info('Succesfully Uploaded reviews to s3')
 

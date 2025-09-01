@@ -1,7 +1,6 @@
 import os
 import argparse
 from datetime import datetime, timedelta
-import yaml
 
 
 class RuntimeArgumentHandler:
@@ -14,15 +13,10 @@ class RuntimeArgumentHandler:
 
 class Settings:
     def __init__(self):
-        # open and load
-        with open('config.yml', 'r') as f:
-            self.config = yaml.safe_load(f)  # safe_load prevents code execution
-
         self.runtime_argument_handler = RuntimeArgumentHandler()
         self.env = os.getenv('ENV', 'dev')
         self.api_url = 'https://api.onebite.app/review'
         self.limit = 50
-        self.bucket_name = self.config['s3_bucket_name']
         self.start_date_str = self.runtime_argument_handler.args.start_date
         self.end_date_str = (
             self.runtime_argument_handler.args.end_date

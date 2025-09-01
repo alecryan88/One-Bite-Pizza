@@ -16,18 +16,8 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Set up Python
-              uses: actions/setup-python@v5
-              with:
-                python-version-file: ".python-version"
-
-            - name: Install uv
-              uses: astral-sh/setup-uv@v6
-              with:
-                version: 0.6.14
-
-            - name: Install dependencies
-              run: uv sync
+            - name: Build image
+              run: ./scripts/docker/run.sh
 
             - name: Run pre-commit
               run: ./scripts/pre-commit.sh run --all-files

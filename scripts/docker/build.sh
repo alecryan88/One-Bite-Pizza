@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Constants
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+AWS_ACCOUNT_ID=820242944968 #$(aws sts get-caller-identity --query Account --output text)
 REPOSITORY_NAME=one_bite_pizza_reviews
 ECR_REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
 FULL_REPOSITORY_NAME=$ECR_REGISTRY/$REPOSITORY_NAME
@@ -27,7 +27,7 @@ then
     docker build -t $FULL_REPOSITORY_NAME:main -t $FULL_REPOSITORY_NAME:$GIT_SHA -f Dockerfile .
     
 else
-    echo "This is not a valid environment. Use dev or prod."
+    echo "This is not a valid environment. Use dev, ci, or prod."
 fi
 
 

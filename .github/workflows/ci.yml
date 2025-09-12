@@ -19,9 +19,12 @@ jobs:
                 echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
                 echo "AWS_DEFAULT_REGION=us-east-1" >> .env
                 echo "ENV=${ENV}" >> .env
-                
+
             # This builds the image and runs the script
             - name: Run test one bite pizza reviews script
               env:
                   ENV: ${{ env.ENV }}
               run: ./scripts/docker/run.sh extract/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
+
+            - name: Push image to ECR
+              run: ./scripts/docker/push.sh

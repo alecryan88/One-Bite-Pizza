@@ -29,3 +29,7 @@ then
 else
     echo "This is not a valid environment. Use dev, ci, or prod."
 fi
+
+
+export GIT_TAG=$FULL_REPOSITORY_NAME:$GIT_SHA
+export MAIN_TAG=$FULL_REPOSITORY_NAME:main

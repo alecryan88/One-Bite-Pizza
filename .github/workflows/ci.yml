@@ -16,5 +16,6 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Run test extract script
-              run: ./scripts/docker/run.sh extract/main.py--start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
+            # This builds the image and runs the script
+            - name: Run test one bite pizza reviews script
+              run: ./scripts/docker/run.sh extract/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

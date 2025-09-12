@@ -1,0 +1,35 @@
+name: cd_workflow
+on: merge
+branches:
+  - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Configure AWS creds
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region:            us-east-1
+
+            - name: Log in to ECR
+              uses: aws-actions/amazon-ecr-login@v2
+              with:
+                region: us-east-1
+
+            - name: Get commit SHA
+              run: echo "COMMIT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+            - name: Pull image
+              run: |
+                IMAGE_NAME=820242944968.dkr.ecr.us-east-1.amazonaws.com/one_bite_pizza_reviews:${COMMIT_SHA}:ci
+                docker pull $IMAGE_NAME
+
+            - name: Retag and push for prod
+              run: |
+                docker tag $IMAGE_NAME:$COMMIT_SHA $IMAGE_NAME:prod
+                docker push $IMAGE_NAME:prod

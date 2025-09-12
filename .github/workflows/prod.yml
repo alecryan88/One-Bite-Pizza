@@ -8,10 +8,7 @@ env:
     # pass in the start and end date for the most recent day
     # These are the same in prod because we are running this for every day
     START_DATE: $(date +'%Y-%m-%d')
-    END_DATE: $(date +'%Y-%m-%d')
-    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    AWS_REGION: us-east-1
+    END_DATE: $(date +'%Y-%m-%d')   
     ENV: prod
 
 jobs:
@@ -24,6 +21,13 @@ jobs:
               uses: actions/setup-python@v5
               with:
                 python-version-file: ".python-version"
+
+            - name: Configure AWS creds
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region:            us-east-1
 
             - name: Install uv
               uses: astral-sh/setup-uv@v6

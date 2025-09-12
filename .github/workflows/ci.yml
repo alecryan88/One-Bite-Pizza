@@ -1,14 +1,11 @@
-name: run_script
+name: ci_workflow
 on: push
 
 env:
     # pass in the start and end date for the most recent days
     START_DATE: $(date -d "2 days ago" +'%Y-%m-%d')
     END_DATE: $(date -d "1 day ago" +'%Y-%m-%d')
-    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    AWS_REGION: us-east-1
-    ENV: staging
+    ENV: ci
 
 jobs:
     build:
@@ -16,23 +13,25 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Set up Python
-              uses: actions/setup-python@v5
+            - name: Configure AWS creds
+              uses: aws-actions/configure-aws-credentials@v4
               with:
-                python-version-file: ".python-version"
+                aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region:            us-east-1
 
-            - name: Install uv
-              uses: astral-sh/setup-uv@v6
-              with:
-                version: 0.6.14
+            - name: Create .env file
+              run: |
+                echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+                echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+                echo "AWS_DEFAULT_REGION=us-east-1" >> .env
+                echo "ENV=${ENV}" >> .env
 
-            - name: Install dependencies
-              run: uv sync
-
-            - name: Run pre-commit
-              run: ./scripts/pre-commit.sh run --all-files
-
-            - name: Run script
+            # This builds the image and runs the script
+            - name: Run test one bite pizza reviews script
               env:
-                ENV: ${{ env.ENV }}
-              run: uv run app/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
+                  ENV: ${{ env.ENV }}
+              run: ./scripts/docker/run.sh extract/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
+
+            - name: Push image to ECR
+              run: ./scripts/docker/push.sh

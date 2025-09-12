@@ -1,4 +1,4 @@
-name: run_script
+name: ci_workflow
 on: push
 
 env:
@@ -8,7 +8,7 @@ env:
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     AWS_REGION: us-east-1
-    ENV: staging
+    ENV: ci
 
 jobs:
     build:
@@ -16,8 +16,5 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Build image
-              run: ./scripts/docker/build.sh
-
-            - name: Run test container
-              run: ./scripts/docker/run.sh
+            - name: Run test extract script
+              run: ./scripts/docker/run.sh extract/main.py--start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

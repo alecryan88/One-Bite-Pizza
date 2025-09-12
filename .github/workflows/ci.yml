@@ -5,9 +5,6 @@ env:
     # pass in the start and end date for the most recent days
     START_DATE: $(date -d "2 days ago" +'%Y-%m-%d')
     END_DATE: $(date -d "1 day ago" +'%Y-%m-%d')
-    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    AWS_REGION: us-east-1
     ENV: ci
 
 jobs:
@@ -15,6 +12,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+
+            - name: Configure AWS creds
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region:            us-east-1
 
             # This builds the image and runs the script
             - name: Run test one bite pizza reviews script

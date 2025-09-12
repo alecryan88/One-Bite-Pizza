@@ -7,7 +7,7 @@ source ./scripts/docker/build.sh
 if [[ $ENV == "dev" ]]
 then
     docker run --env-file .env -v $(pwd)/extract:/app/extract $GIT_TAG "$@"
-elif [[ $ENV == "prod" ]]
-then
-    docker run --env-file .env $GIT_TAG "$@"
+else
+    echo "Running in ${ENV} environment"
+    docker run $GIT_TAG "$@"
 fi

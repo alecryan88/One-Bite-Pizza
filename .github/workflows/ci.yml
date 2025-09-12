@@ -1,8 +1,8 @@
 name: ci_workflow
 on:
   push:
-    branches:
-      - !main # Only run on non-main branches
+    branches-ignore:
+      - main
 
 env:
     # pass in the start and end date for the most recent days

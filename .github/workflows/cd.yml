@@ -1,8 +1,8 @@
 name: cd_workflow
-on: merge
-branches:
-  - main
-
+on:
+  push:
+    branches:
+      - main 
 jobs:
     build:
         runs-on: ubuntu-latest

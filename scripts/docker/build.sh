@@ -12,6 +12,14 @@ then
     # Tags image with the git sha, no main tag. This is used for quick development and testing.
     echo "Building the image in ${ENV} environment"
     docker build -t $REPOSITORY_NAME:$GIT_SHA -f Dockerfile .
+
+elif [[ $ENV == "ci" ]]
+then
+    # Tags image with the git sha, and  ci tag. This is used for CI only.
+    echo "Building the image in ${ENV} environment"
+    docker build -t $FULL_REPOSITORY_NAME:ci -t $FULL_REPOSITORY_NAME:$GIT_SHA -f Dockerfile .
+
+
 elif [[ $ENV == "prod" ]]
 then
     # Tags image with the main tag and the git sha in prod

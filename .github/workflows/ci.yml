@@ -18,4 +18,6 @@ jobs:
 
             # This builds the image and runs the script
             - name: Run test one bite pizza reviews script
+              env:
+                  ENV: ${{ env.ENV }}
               run: ./scripts/docker/run.sh extract/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

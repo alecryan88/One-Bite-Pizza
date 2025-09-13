@@ -9,9 +9,8 @@ FULL_REPOSITORY_NAME=$ECR_REGISTRY/$REPOSITORY_NAME
 GIT_SHA=$GITHUB_SHA
 
 echo "GIT_SHA: $GIT_SHA"
-echo "MAIN_TAG: $MAIN_TAG"
 
 # Push the image
 echo "Pushing the image"
 docker push $FULL_REPOSITORY_NAME:$GIT_SHA
-docker push $FULL_REPOSITORY_NAME:ci
+docker push $FULL_REPOSITORY_NAME:$ENV

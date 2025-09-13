@@ -9,6 +9,7 @@ env:
     START_DATE: $(date -d "2 days ago" +'%Y-%m-%d')
     END_DATE: $(date -d "1 day ago" +'%Y-%m-%d')
     ENV: ci
+    GITHUB_SHA: ${{ github.sha }}
 
 jobs:
     build:
@@ -22,6 +23,9 @@ jobs:
                 aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
                 aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 aws-region:            us-east-1
+            
+            - name: Log in to ECR
+              uses: aws-actions/amazon-ecr-login@v2
 
             - name: Create .env file
               run: |
@@ -29,6 +33,7 @@ jobs:
                 echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
                 echo "AWS_DEFAULT_REGION=us-east-1" >> .env
                 echo "ENV=${ENV}" >> .env
+                echo "GITHUB_SHA=${GITHUB_SHA}" >> .env
 
             # This builds the image and runs the script
             - name: Run test one bite pizza reviews script
@@ -38,3 +43,5 @@ jobs:
 
             - name: Push image to ECR
               run: ./scripts/docker/push.sh
+              env:
+                  ENV: ${{ env.ENV }}

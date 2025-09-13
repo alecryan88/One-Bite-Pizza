@@ -8,6 +8,9 @@ import logging
 
 # Config
 from modules.config import Settings
+import random
+
+random.seed(42)
 
 
 def convert_str_to_datetime(date_str: str) -> datetime:

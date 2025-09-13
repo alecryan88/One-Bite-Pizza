@@ -16,19 +16,15 @@ echo "FULL_REPOSITORY_NAME: $FULL_REPOSITORY_NAME"
 
 if [[ $ENV == "prod" ]]
 then
-    # Push the image
+    # pull the image and push to prod
     echo "Pulling CI image"
     docker pull $FULL_REPOSITORY_NAME:ci
     echo "Re-tagging for prod"
     docker tag $FULL_REPOSITORY_NAME:ci $FULL_REPOSITORY_NAME:$ENV
     echo "Pushing to prod image to ECR"
-    #docker push $FULL_REPOSITORY_NAME:$GIT_SHA
     docker push $FULL_REPOSITORY_NAME:$ENV
 
-     # Remove the CI tag since it's now promoted
-    echo "Removing CI tag after successful promotion"
-    aws ecr batch-delete-image --repository-name $REPOSITORY_NAME --image-ids imageTag=ci
-    
+
 elif [[ $ENV == "ci" ]]
 then
     echo "Pushing to ECR in CI environment"

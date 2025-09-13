@@ -5,7 +5,7 @@ AWS_ACCOUNT_ID=820242944968 #$(aws sts get-caller-identity --query Account --out
 REPOSITORY_NAME=one_bite_pizza_reviews
 ECR_REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
 FULL_REPOSITORY_NAME=$ECR_REGISTRY/$REPOSITORY_NAME
-GIT_SHA=$(git rev-parse --short HEAD)
+GIT_SHA=$GITHUB_SHA
 
 if [[ $ENV == "dev" ]]
 then

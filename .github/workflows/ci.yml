@@ -43,3 +43,5 @@ jobs:
 
             - name: Push image to ECR
               run: ./scripts/docker/push.sh
+              env:
+                  ENV: ${{ env.ENV }}

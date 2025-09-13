@@ -3,6 +3,13 @@ on:
   push:
     branches:
       - main
+
+env:
+    # re-tag the image for prod
+    ENV: prod
+    GITHUB_SHA: ${{ github.sha }}
+
+
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -19,15 +26,5 @@ jobs:
             - name: Log in to ECR
               uses: aws-actions/amazon-ecr-login@v2
 
-            - name: Get commit SHA
-              run: echo "COMMIT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
-
-            - name: Pull image
-              run: |
-                IMAGE_NAME=820242944968.dkr.ecr.us-east-1.amazonaws.com/one_bite_pizza_reviews:${COMMIT_SHA}:ci
-                docker pull $IMAGE_NAME
-
-            - name: Retag and push for prod
-              run: |
-                docker tag $IMAGE_NAME:$COMMIT_SHA $IMAGE_NAME:prod
-                docker push $IMAGE_NAME:prod
+            - name: Re-tag and Push image to ECR
+              run: ./scripts/docker/push.sh

@@ -26,9 +26,6 @@ jobs:
             
             - name: Log in to ECR
               uses: aws-actions/amazon-ecr-login@v2
-              
-            - name: Get commit SHA
-              run: echo "${GITHUB_SHA}" 
 
             - name: Create .env file
               run: |

@@ -60,8 +60,6 @@ jobs:
                 else
                   END_DATE="${{ inputs.end_date }}"
                 fi
-                  END_DATE="${{ inputs.end_date }}"
-                fi
       
                 # Make the start and end date available to the script
                 echo "START_DATE=$START_DATE" >> $GITHUB_ENV

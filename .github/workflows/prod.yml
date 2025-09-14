@@ -32,10 +32,9 @@ jobs:
             - name: Log in to ECR
               uses: aws-actions/amazon-ecr-login@v2
 
-            - name: Install dependencies
-              run: uv sync
 
-            - name: Run script
+            # This builds the image and runs the script
+            - name: Run test one bite pizza reviews script
               env:
-                ENV: ${{ env.ENV }}
-              run: uv run app/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
+                  ENV: ${{ env.ENV }}
+              run: ./scripts/docker/run.sh extract/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}

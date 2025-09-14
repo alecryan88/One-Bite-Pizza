@@ -50,15 +50,15 @@ jobs:
                 then
                   START_DATE="${{ inputs.start_date }}"
                 else
-                  START_DATE="${{ env.START_DATE }}"
+                  START_DATE="echo ${{ env.START_DATE }}"
                 fi
 
                 # If end date is not provided, use the default end date
                 if [ -z "${{ inputs.end_date }}" ]
                 then
-                  END_DATE="${{ env.END_DATE }}"
+                  END_DATE=${{ inputs.end_date }}
                 else
-                  END_DATE="${{ inputs.end_date }}"
+                  END_DATE="echo ${{ env.END_DATE }}"
                 fi
       
                 # Make the start and end date available to the script

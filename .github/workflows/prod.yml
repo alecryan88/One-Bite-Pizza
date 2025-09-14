@@ -48,17 +48,17 @@ jobs:
                 # If start date is not provided, use the default start date
                 if [ -z "${{ inputs.start_date }}" ]
                 then
-                  START_DATE="${{ inputs.start_date }}"
+                  START_DATE="${{ env.START_DATE }}"
                 else
-                  START_DATE="echo ${{ env.START_DATE }}"
+                  START_DATE="${{ inputs.start_date }}"
                 fi
 
                 # If end date is not provided, use the default end date
                 if [ -z "${{ inputs.end_date }}" ]
                 then
-                  END_DATE=${{ inputs.end_date }}
+                  END_DATE="${{ env.END_DATE }}"
                 else
-                  END_DATE="echo ${{ env.END_DATE }}"
+                  END_DATE="${{ inputs.end_date }}"
                 fi
       
                 # Make the start and end date available to the script

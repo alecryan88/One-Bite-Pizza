@@ -44,7 +44,7 @@ jobs:
                 # If start date is not provided, use today's date as default
                 if [ -z "${{ inputs.start_date }}" ]
                 then
-                  START_DATE=$(date +'%Y-%m-%d')
+                  START_DATE=$(date -v+1d +'%Y-%m-%d')
                 else
                   START_DATE="${{ inputs.start_date }}"
                 fi
@@ -52,7 +52,7 @@ jobs:
                 # If end date is not provided, use today's date as default
                 if [ -z "${{ inputs.end_date }}" ]
                 then
-                  END_DATE=$(date +'%Y-%m-%d')
+                  END_DATE=$(date -v+1d +'%Y-%m-%d')
                 else
                   END_DATE="${{ inputs.end_date }}"
                 fi

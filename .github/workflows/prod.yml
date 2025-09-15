@@ -14,10 +14,6 @@ on:
           type: string
 
 env:
-    # pass in the start and end date for the most recent day
-    # These are the same in prod because we are running this for every day
-    START_DATE: $(date +'%Y-%m-%d')
-    END_DATE: $(date +'%Y-%m-%d')   
     ENV: prod
 
 jobs:
@@ -45,18 +41,18 @@ jobs:
             - name: Set run start and end date
               id: vars
               run: |
-                # If start date is not provided, use the default start date
+                # If start date is not provided, use today's date as default
                 if [ -z "${{ inputs.start_date }}" ]
                 then
-                  START_DATE="${{ env.START_DATE }}"
+                  START_DATE=$(date +'%Y-%m-%d')
                 else
                   START_DATE="${{ inputs.start_date }}"
                 fi
 
-                # If end date is not provided, use the default end date
+                # If end date is not provided, use today's date as default
                 if [ -z "${{ inputs.end_date }}" ]
                 then
-                  END_DATE="${{ env.END_DATE }}"
+                  END_DATE=$(date +'%Y-%m-%d')
                 else
                   END_DATE="${{ inputs.end_date }}"
                 fi

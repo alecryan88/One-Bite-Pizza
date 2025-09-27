@@ -5,12 +5,13 @@ import boto3
 import io
 import json
 import logging
+import os
 
 # Config
 from modules.config import Settings
-import random
 
-random.seed(42)
+ENV = os.getenv('ENV')
+BUCKET_NAME = f'one-bite-pizza-reviews-{ENV}'
 
 
 def convert_str_to_datetime(date_str: str) -> datetime:
@@ -86,15 +87,18 @@ def main() -> None:
     # Load data to s3
     s3 = boto3.client('s3')
 
+    logging.info(f'Uploading reviews to {BUCKET_NAME}...')
     for date, reviews in filtered_reviews_by_date.items():
         buffer = io.StringIO()
         buffer.write(json.dumps(reviews))
         # Create the file name
         file_name = f'data/{settings.env}/date={date}.json'
         # Upload the data to s3
-        s3.put_object(Bucket='one-bite-pizza-reviews', Key=file_name, Body=buffer.getvalue())
 
-    logging.info('Succesfully Uploaded reviews to s3')
+        s3.put_object(Bucket=BUCKET_NAME, Key=file_name, Body=buffer.getvalue())
+        logging.info(f'Successfully uploaded reviews to {BUCKET_NAME} for {date}')
+
+    logging.info(f'Succesfully Uploaded reviews to {BUCKET_NAME}')
 
 
 if __name__ == '__main__':

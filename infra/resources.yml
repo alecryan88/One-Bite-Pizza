@@ -7,6 +7,7 @@ Parameters:
     AllowedValues:
       - dev
       - prod
+      - ci
     Description: "Deployment environment"
 
   ProjectName:

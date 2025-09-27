@@ -34,5 +34,5 @@ Outputs:
     Description: Name of the bucket
     Value: !Ref OneBitePizzaReviewsBucket
   RepositoryName:
-    Description: Name of the bucket
+    Description: Name of the repository
     Value: !Ref OneBitePizzaReviewsECRRepository

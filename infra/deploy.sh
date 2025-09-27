@@ -1,4 +1,8 @@
 #!/bin/bash
+set -euo pipefail 
+# e: exit on any error
+# u: treat unset variables as errors
+# o pipefail: don’t ignore errors in pipelines
 
 PROJECT_NAME=one-bite-pizza-reviews
 

@@ -5,7 +5,7 @@ on:
       - main
 
 env:
-    # re-tag the image for prod
+    # re-tag the image for prod.
     ENV: prod
     GITHUB_SHA: ${{ github.sha }}
 

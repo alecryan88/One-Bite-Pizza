@@ -5,3 +5,8 @@ repos:
     hooks:
       - id: ruff             # Lint (fail on errors)
       - id: ruff-format      # Format check (like black --check)
+  - repo: https://github.com/awslabs/cfn-python-lint
+    rev: v0.15.0 # The version of cfn-lint to use
+    hooks:
+      - id: cfn-python-lint
+        files: infra/.*\.(json|yml|yaml)$

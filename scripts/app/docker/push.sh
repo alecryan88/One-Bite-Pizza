@@ -6,7 +6,7 @@ AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 AWS_REGION=us-east-1
 ECR_REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 FULL_REPOSITORY_NAME=$ECR_REGISTRY/$REPOSITORY_NAME
-GIT_SHA=$GITHUB_SHA
+GIT_SHA=$=(git rev-parse HEAD)
 
 echo "GIT_SHA: $GIT_SHA"
 echo "AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID"

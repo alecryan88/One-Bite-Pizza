@@ -1,12 +1,17 @@
 #!/bin/bash
 
 # Run build script
-source ./scripts/docker/build.sh
+source ./scripts/app/docker/build.sh
+
+echo "ENV: $ENV"
+echo "GIT_TAG: $GIT_TAG"
+echo "PROD_TAG: $PROD_TAG"
+echo "PWD: $PWD"
 
 # In dev, we mount the extract directory to the container for hot reloading
 if [[ $ENV == "dev" ]]
 then
-    docker run --env-file .env -v $(pwd)/extract:/app/extract $GIT_TAG "$@"
+    docker run --env-file .env -v $(pwd)/app:/app/app $GIT_TAG "$@"
 elif [[ $ENV == "prod" ]]
 then
     echo "Running in ${ENV} environment"

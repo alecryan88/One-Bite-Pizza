@@ -6,7 +6,6 @@ REPOSITORY_NAME=one_bite_pizza_reviews
 ECR_REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
 FULL_REPOSITORY_NAME=$ECR_REGISTRY/$REPOSITORY_NAME
 GIT_SHA=$(git rev-parse HEAD)
-ENV=dev
 
 if [[ $ENV == "dev" ]]
 then

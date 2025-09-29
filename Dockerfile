@@ -6,9 +6,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 WORKDIR /app
 
 COPY pyproject.toml uv.lock .python-version /app/
-COPY ./extract /app/extract
+COPY ./app /app/app
 RUN uv sync --frozen
 
-# Code will be mounted at runtime by scripts/docker/run.sh
+# Code will be mounted at runtime by scripts/app/docker/run.sh
 ENTRYPOINT ["uv", "run"]
 

@@ -10,7 +10,7 @@ import os
 # Config
 from modules.config import Settings
 
-ENV = os.getenv('ENV')
+ENV = os.getenv('ENV', default='dev')
 BUCKET_NAME = f'one-bite-pizza-reviews-{ENV}'
 
 

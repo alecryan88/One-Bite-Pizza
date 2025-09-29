@@ -39,9 +39,9 @@ jobs:
             - name: Run test one bite pizza reviews script
               env:
                   ENV: ${{ env.ENV }}
-              run: ./scripts/docker/run.sh extract/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
+              run: ./scripts/app/docker/run.sh app/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
 
             - name: Push image to ECR
-              run: ./scripts/docker/push.sh
+              run: ./scripts/app/docker/push.sh
               env:
                   ENV: ${{ env.ENV }}

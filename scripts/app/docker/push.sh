@@ -1,4 +1,9 @@
 #!/bin/bash
+set -euo pipefail 
+# e: exit on any error
+# u: treat unset variables as errors
+# o pipefail: don’t ignore errors in pipelines
+
 
 # Constants
 source ./scripts/shared/ecr_base.sh

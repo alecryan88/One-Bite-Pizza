@@ -1,4 +1,9 @@
 #!/bin/bash
+set -euo pipefail 
+# e: exit on any error
+# u: treat unset variables as errors
+# o pipefail: don’t ignore errors in pipelines
+
 
 # Set variables shared amongst ECR and CloudFormation
 
@@ -15,4 +20,3 @@ export GIT_SHA=$GIT_SHA
 export AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
 export AWS_REGION=$AWS_REGION
 export ENV=$ENV
-export PWD=$PWD

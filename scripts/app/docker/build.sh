@@ -1,24 +1,22 @@
 #!/bin/bash
+set -euo pipefail 
+# e: exit on any error
+# u: treat unset variables as errors
+# o pipefail: don’t ignore errors in pipelines
 
-# Constants
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-REPOSITORY_NAME=one_bite_pizza_reviews
-ECR_REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
-FULL_REPOSITORY_NAME=$ECR_REGISTRY/$REPOSITORY_NAME
-GIT_SHA=$(git rev-parse HEAD)
+source ./scripts/shared/ecr_base.sh
 
 if [[ $ENV == "dev" ]]
 then
     # Tags image with the git sha, no main tag. This is used for quick development and testing.
     echo "Building the image in ${ENV} environment"
-    docker build -t $FULL_REPOSITORY_NAME:$GIT_SHA -f Dockerfile .
+    docker build -t $ECR_GIT_SHA_TAG -f Dockerfile .
 
 elif [[ $ENV == "ci" ]]
 then
-    # Tags image with the git sha, and  ci tag. This is used for CI only.
+    # Tags image with the git sha, and env tag. This is used for CI environment only.
+    # We'll push this image to ECR in the push.sh script.
     echo "Building the image in ${ENV} environment"
-    docker build -t $FULL_REPOSITORY_NAME:ci -t $FULL_REPOSITORY_NAME:$GIT_SHA -f Dockerfile .
+    docker build -t $ECR_GIT_SHA_TAG -t $ECR_ENV_TAG -f Dockerfile .
 fi
 
-export GIT_TAG=$FULL_REPOSITORY_NAME:$GIT_SHA
-export PROD_TAG=$FULL_REPOSITORY_NAME:prod

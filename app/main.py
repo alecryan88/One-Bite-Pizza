@@ -5,13 +5,11 @@ import boto3
 import io
 import json
 import logging
-import os
 
 # Config
 from modules.config import Settings
 
-ENV = os.getenv('ENV', default='dev')
-BUCKET_NAME = f'one-bite-pizza-reviews-{ENV}'
+BUCKET_NAME = 'one-bite-pizza'
 
 
 def convert_str_to_datetime(date_str: str) -> datetime:

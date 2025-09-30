@@ -4,7 +4,11 @@
 
 source ./scripts/shared/common.sh
 
+# This is the ECR registry for the project.
 ECR_REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+# This is the full repository name for the project.
+# It includes the environment name.
 FULL_REPOSITORY_NAME=$ECR_REGISTRY/$PROJECT_NAME-$ENV
 
 export ECR_REGISTRY=$ECR_REGISTRY

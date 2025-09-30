@@ -8,5 +8,5 @@ source ./scripts/shared/common.sh
 
 aws cloudformation deploy \
     --template-file ${PWD}/infra/cloudformation/resources.yml \
-    --stack-name ${PROJECT_NAME}-${ENV} \
-    --parameter-overrides Environment=${ENV} ProjectName=${PROJECT_NAME}
+    --stack-name ${PROJECT_NAME} \
+    --parameter-overrides ProjectName=${PROJECT_NAME}

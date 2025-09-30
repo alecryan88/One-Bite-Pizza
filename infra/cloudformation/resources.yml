@@ -2,13 +2,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Resources template for One Bite Pizza Reviews'
 
 Parameters:
-  Environment:
-    Type: String
-    AllowedValues:
-      - dev
-      - prod
-      - ci
-    Description: "Deployment environment"
 
   ProjectName:
     Type: String
@@ -19,7 +12,7 @@ Resources:
   OneBitePizzaReviewsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${ProjectName}-${Environment}
+      BucketName: !Sub ${ProjectName}
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -28,7 +21,7 @@ Resources:
   OneBitePizzaReviewsECRRepository:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: !Sub ${ProjectName}-${Environment}
+      RepositoryName: !Sub ${ProjectName}
 
 Outputs:
   BucketName:

@@ -7,7 +7,7 @@ import json
 import logging
 
 # Config
-from modules.config import Settings
+from app.modules.config import Settings
 
 BUCKET_NAME = 'one-bite-pizza'
 
@@ -69,12 +69,12 @@ def get_all_reviews(settings: Settings) -> list[dict]:
     return filtered_reviews_by_date
 
 
-def main() -> None:
+def main(event) -> None:
     # Configure logging
     logging.basicConfig(level=logging.INFO)
 
-    # Get settings from environment variables and command line arguments
-    settings = Settings()
+    # Get settings from the event pased
+    settings = Settings(event)
 
     # Log the environment
     logging.info(f'Running for {settings.env} environment')
@@ -99,5 +99,12 @@ def main() -> None:
     logging.info(f'Succesfully Uploaded reviews to {BUCKET_NAME}')
 
 
+def lambda_handler(event, context) -> None:
+    main(event)
+    return {'statusCode': 200, 'body': 'Succesfully Uploaded reviews to s3'}
+
+
 if __name__ == '__main__':
-    main()
+    with open('lambda_test.json', 'r') as f:
+        event = json.load(f)
+    main(event)

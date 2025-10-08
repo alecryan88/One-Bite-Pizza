@@ -1,0 +1,15 @@
+{
+    "version": "0",
+    "id": "6ca847d4-e893-001d-4983-6d3621e42d25",
+    "detail-type": "Scheduled Event",
+    "source": "aws.events",
+    "account": "820242944968",
+    "time": "2025-10-03T11:58:13Z",
+    "region": "us-east-1",
+    "resources": [
+      "arn:aws:events:us-east-1:820242944968:rule/trigger_lambda"
+    ],
+    "detail": {
+      
+    }
+  }

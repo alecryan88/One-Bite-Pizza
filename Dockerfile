@@ -1,4 +1,5 @@
-
+# Using multi-stage build to build the dependencies and then use the builder stage to build the image.
+# THis keeps the image size down and only includes the runtime dependencies when builidng the final lambda image
 FROM ghcr.io/astral-sh/uv:0.9.0 AS uv
 
 # First, bundle the dependencies into the task root.

@@ -4,7 +4,7 @@
     "detail-type": "Scheduled Event",
     "source": "aws.events",
     "account": "820242944968",
-    "time": "2025-10-03T11:58:13Z",
+    "time": "2025-10-01T11:58:13Z",
     "region": "us-east-1",
     "resources": [
       "arn:aws:events:us-east-1:820242944968:rule/trigger_lambda"

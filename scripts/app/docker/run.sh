@@ -15,7 +15,7 @@ echo "ECR_ENV_TAG: $ECR_ENV_TAG"
 # In dev, we mount the extract directory to the container for hot reloading
 if [[ $ENV == "dev" ]]
 then
-    docker run --env-file .env -p 9000:8080 -v $(pwd)/app:/app/app $ECR_GIT_SHA_TAG "$@"
+    docker run --env-file .env -p 9000:8080 -v $(pwd)/app:/var/task/app $ECR_GIT_SHA_TAG "$@"
 elif [[ $ENV == "prod" ]]
 then
     echo "Running in ${ENV} environment"

@@ -92,9 +92,9 @@ def main(event) -> None:
         # Create the file name
         file_name = f'data/{settings.env}/date={date}.json'
         # Upload the data to s3
-
+        print(filtered_reviews_by_date)
         s3.put_object(Bucket=BUCKET_NAME, Key=file_name, Body=buffer.getvalue())
-        logging.info(f'Successfully uploaded reviews to {BUCKET_NAME} for {date}')
+        print(f'Successfully uploaded reviews to {BUCKET_NAME} for {date}')
 
     logging.info(f'Succesfully Uploaded reviews to {BUCKET_NAME}')
 

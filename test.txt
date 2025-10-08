@@ -1,1 +1,0 @@
-docker run --platform linux/arm64/v8 -p 9000:8080 e03f537e22ecbd9482de1a0ccc0931be4fc5c9b67d9e8cc33095f13b06fe20ea

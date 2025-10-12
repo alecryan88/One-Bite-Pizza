@@ -21,7 +21,8 @@ Resources:
     Properties:
       RepositoryName: !Sub ${ProjectName}-producer
 
-  LambdaExecutionRole:
+  # Producer Lambda Resources
+  ProducerLambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub ${ProjectName}-producer-lambda-execution-role
@@ -35,11 +36,11 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
-  LambdaExecutionPolicy:
+  ProducerLambdaExecutionPolicy:
     Type: AWS::IAM::Policy
     Properties:
       Roles:
-        - !Ref LambdaExecutionRole
+        - !Ref ProducerLambdaExecutionRole
       PolicyName: !Sub ${ProjectName}-producer-lambda-execution-policy
       PolicyDocument:
         Version: '2012-10-17'
@@ -50,20 +51,13 @@ Resources:
               - kinesis:PutRecords
             Resource: !GetAtt KinesisStream.Arn
 
-  ProducerLambdaFunction:
-    Type: AWS::Lambda::Function
-    Properties:
-      Code:
-        ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProducerLambdaECRRepository}:prod
-      Description: AWS lambda function that produces data for the one bite pizza
-        reviews project
-      FunctionName: !Sub ${ProjectName}-producer-lambda-function
-      MemorySize: 128
-      PackageType: Image
-      ReservedConcurrentExecutions: 1
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Timeout: 300
-      Environment:
-        Variables:
-          PROJECT_NAME: !Ref ProjectName
-          ENV: prod # Just for deploying in prod but can be overwritten
+
+Outputs:
+    
+  ProducerLambdaExecutionRoleArn:
+    Description: ARN of the producer lambda execution role
+    Value: !GetAtt ProducerLambdaExecutionRole.Arn
+
+  KinesisStreamArn:
+    Description: ARN of the kinesis stream
+    Value: !GetAtt KinesisStream.Arn

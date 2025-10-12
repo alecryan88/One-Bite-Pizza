@@ -1,110 +1,57 @@
 import requests
-from collections import defaultdict
-from datetime import datetime
-import boto3
-import io
-import json
-import logging
-
-# Config
-from app.modules.config import Settings
-
-BUCKET_NAME = 'one-bite-pizza'
 
 
-def convert_str_to_datetime(date_str: str) -> datetime:
-    return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+class OddsAPIHandler:
+    def __init__(self):
+        self.url = 'https://api.the-odds-api.com'
+        self.params = {'apiKey': 'a757151ea690238d05a4538d110ddaa5'}
 
-
-def get_review_offset(url: str, offset: int, limit: int) -> list[dict]:
-    """Fetch reviews from the API"""
-    try:
-        response = requests.get(url, params={'offset': offset, 'limit': limit})
+    def get_sports(self) -> list[dict]:
+        """Returns a list of in-season sport objects. The sport key can be used as the sport parameter in other endpoints.
+        This endpoint does not count against the usage quota.
+        """
+        path = '/v4/sports/'
+        response = requests.get(self.url + path, params=self.params)
         return response.json()
-    except requests.exceptions.RequestException as e:
-        logging.error(f'Error fetching reviews: {e}')
-        return []
+
+    def get_odds(self, sport: str, regions: str, markets: str) -> list[dict]:
+        """Returns a list of upcoming and live games with recent odds for a given sport,
+        region and market
+        """
+        path = f'/v4/sports/{sport}/odds'
+
+        params = {'regions': regions, 'markets': markets}
+
+        self.params.update(params)
+
+        response = requests.get(self.url + path, params=self.params)
+
+        print(response.url)
+
+        print(response.status_code)
+        return response.json()
 
 
-def get_all_reviews(settings: Settings) -> list[dict]:
-    """Get all reviews from the API for specified date range"""
-    reviews_list = []
-    # Start at the first page
-    page = 0
+def main(event) -> list[dict]:
+    SPORTS_TO_GET = ['americanfootball_ncaaf']
+    REGIONS_TO_GET = 'us'
+    MARKETS_TO_GET = 'totals'
 
-    # Loop through pages until we've passed the date we want
-    while True:
-        offset = page * settings.limit
-        reviews = get_review_offset(settings.api_url, offset, settings.limit)
-        reviews_list.extend(reviews)
+    odds_api_handler = OddsAPIHandler()
 
-        # Check the last review's date of the page to determine if we've
-        # passed the date we want to load
-        last_ts_of_page = convert_str_to_datetime(reviews[-1]['date'])
+    odds_data = odds_api_handler.get_odds(SPORTS_TO_GET[0], REGIONS_TO_GET, MARKETS_TO_GET)
 
-        # Break loop if we've passed the date we want to load
-        if last_ts_of_page.date() < settings.start_date_dt.date():
-            break
-        else:
-            page += 1
-
-    # Partition data for load to s3
-    reviews_by_date = defaultdict(list)
-
-    # Partition reviews by date
-    for review in reviews_list:
-        dt = datetime.fromisoformat(review['date'].replace('Z', '+00:00'))
-        reviews_by_date[dt.strftime('%Y-%m-%d')].append(review)
-
-    filtered_reviews_by_date = {
-        k: v for k, v in reviews_by_date.items() if k in settings.date_range
-    }
-
-    logging.info(f'Loaded {len(filtered_reviews_by_date)} reviews for {settings.date_range}')
-
-    # Print the number of reviews for each day
-    for date, reviews in filtered_reviews_by_date.items():
-        logging.info(f'{date}: {len(reviews)}')
-
-    return filtered_reviews_by_date
+    return odds_data
 
 
-def main(event) -> None:
-    # Configure logging
-    logging.basicConfig(level=logging.INFO)
-
-    # Get settings from the event pased
-    settings = Settings(event)
-
-    # Log the environment
-    logging.info(f'Running for {settings.env} environment')
-
-    # Get reviews filtered by the provided the date range in setings
-    filtered_reviews_by_date = get_all_reviews(settings)
-
-    # Load data to s3
-    s3 = boto3.client('s3')
-
-    logging.info(f'Uploading reviews to {BUCKET_NAME}...')
-    for date, reviews in filtered_reviews_by_date.items():
-        buffer = io.StringIO()
-        buffer.write(json.dumps(reviews))
-        # Create the file name
-        file_name = f'data/{settings.env}/date={date}.json'
-        # Upload the data to s3
-        print(filtered_reviews_by_date)
-        s3.put_object(Bucket=BUCKET_NAME, Key=file_name, Body=buffer.getvalue())
-        print(f'Successfully uploaded reviews to {BUCKET_NAME} for {date}')
-
-    logging.info(f'Succesfully Uploaded reviews to {BUCKET_NAME}')
-
-
-def lambda_handler(event, context) -> None:
-    main(event)
-    return {'statusCode': 200, 'body': 'Succesfully Uploaded reviews to s3'}
+def lambda_handler(event, context) -> dict:
+    events = main(event)
+    print(event)
+    return {'statusCode': 200, 'example event': events[0]}
 
 
 if __name__ == '__main__':
-    with open('lambda_test.json', 'r') as f:
-        event = json.load(f)
-    main(event)
+    event = {}
+    context = {}
+    data = lambda_handler(event, context)
+    print(data)

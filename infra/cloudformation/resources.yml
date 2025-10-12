@@ -1,32 +1,69 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Resources template for One Bite Pizza Reviews'
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resources template for One Bite Pizza Reviews
 
 Parameters:
 
   ProjectName:
     Type: String
-    Description: "Project name"
-
+    Description: Project name
 
 Resources:
-  OneBitePizzaReviewsBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub ${ProjectName}
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
 
-  OneBitePizzaReviewsECRRepository:
+  KinesisStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: !Sub ${ProjectName}
+      ShardCount: 1
+      RetentionPeriodHours: 24 # Default is 24 hours
+
+  ProducerLambdaECRRepository:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: !Sub ${ProjectName}
+      RepositoryName: !Sub ${ProjectName}-producer
 
-Outputs:
-  BucketName:
-    Description: Name of the bucket
-    Value: !Ref OneBitePizzaReviewsBucket
-  RepositoryName:
-    Description: Name of the repository
-    Value: !Ref OneBitePizzaReviewsECRRepository
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-producer-lambda-execution-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  LambdaExecutionPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - !Ref LambdaExecutionRole
+      PolicyName: !Sub ${ProjectName}-producer-lambda-execution-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - kinesis:PutRecord
+              - kinesis:PutRecords
+            Resource: !GetAtt KinesisStream.Arn
+
+  ProducerLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ProducerLambdaECRRepository}:prod
+      Description: AWS lambda function that produces data for the one bite pizza
+        reviews project
+      FunctionName: !Sub ${ProjectName}-producer-lambda-function
+      MemorySize: 128
+      PackageType: Image
+      ReservedConcurrentExecutions: 1
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 300
+      Environment:
+        Variables:
+          PROJECT_NAME: !Ref ProjectName
+          ENV: prod # Just for deploying in prod but can be overwritten

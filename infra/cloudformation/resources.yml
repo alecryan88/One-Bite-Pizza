@@ -22,7 +22,7 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Sub ${ProjectName}
-      
+
   # Producer Lambda Resources
   ProducerLambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -109,3 +109,16 @@ Resources:
         BufferingHints:
           SizeInMBs: 1
           IntervalInSeconds: 60
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-lambda
+      Handler: app.producer.lambda_handler
+      Role: !GetAtt ProducerLambdaExecutionRole.Arn
+      Code:
+        ImageUri: !GetAtt ProducerLambdaECRRepository.RepositoryUri
+      Environment:
+        Variables:
+          KINESIS_STREAM_NAME: !Ref KinesisStream
+          DELIVERY_STREAM_BUCKET: !Ref DeliveryStreamBucket

@@ -36,12 +36,7 @@ jobs:
                 echo "GITHUB_SHA=${GITHUB_SHA}" >> .env
 
             # This builds the image and runs the script
-            - name: Run test one bite pizza reviews script
+            - name: Build and push image to ECR
               env:
                   ENV: ${{ env.ENV }}
-              run: ./scripts/app/docker/run.sh app/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
-
-            - name: Push image to ECR
-              run: ./scripts/app/docker/push.sh
-              env:
-                  ENV: ${{ env.ENV }}
+              run: ./scripts/app/docker/build.sh && ./scripts/app/docker/push.sh

@@ -21,8 +21,8 @@ Resources:
   ProducerLambdaECRRepository:
     Type: AWS::ECR::Repository
     Properties:
-      RepositoryName: !Sub ${ProjectName}-producer
-
+      RepositoryName: !Sub ${ProjectName}
+      
   # Producer Lambda Resources
   ProducerLambdaExecutionRole:
     Type: AWS::IAM::Role

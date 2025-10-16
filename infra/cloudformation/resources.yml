@@ -114,7 +114,7 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${ProjectName}-lambda
-      Handler: app.producer.lambda_handler
+      PackageType: Image
       Role: !GetAtt ProducerLambdaExecutionRole.Arn
       Code:
         ImageUri: !GetAtt ProducerLambdaECRRepository.RepositoryUri

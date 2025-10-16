@@ -5,9 +5,6 @@ on:
       - main
 
 env:
-    # pass in the start and end date for the most recent days
-    START_DATE: $(date -d "2 days ago" +'%Y-%m-%d')
-    END_DATE: $(date -d "1 day ago" +'%Y-%m-%d')
     ENV: ci
     GITHUB_SHA: ${{ github.sha }}
 
@@ -27,21 +24,11 @@ jobs:
             - name: Log in to ECR
               uses: aws-actions/amazon-ecr-login@v2
 
-            - name: Create .env file
-              run: |
-                echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-                echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-                echo "AWS_DEFAULT_REGION=us-east-1" >> .env
-                echo "ENV=${ENV}" >> .env
-                echo "GITHUB_SHA=${GITHUB_SHA}" >> .env
-
             # This builds the image and runs the script
-            - name: Run test one bite pizza reviews script
+            - name: Build and push image to ECR
               env:
                   ENV: ${{ env.ENV }}
-              run: ./scripts/app/docker/run.sh app/main.py --start_date ${{ env.START_DATE }} --end_date ${{ env.END_DATE }}
+              run: ./scripts/app/docker/build.sh && ./scripts/app/docker/push.sh
 
-            - name: Push image to ECR
-              run: ./scripts/app/docker/push.sh
-              env:
-                  ENV: ${{ env.ENV }}
+            - name: Deploy CFN Lambda Resources
+              run: ./scripts/infra/deploy.sh

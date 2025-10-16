@@ -1,32 +1,123 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Resources template for One Bite Pizza Reviews'
+AWSTemplateFormatVersion: 2010-09-09
+Description: Resources template for One Bite Pizza Reviews
 
 Parameters:
 
   ProjectName:
     Type: String
-    Description: "Project name"
-
+    Description: Project name
 
 Resources:
-  OneBitePizzaReviewsBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub ${ProjectName}
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
 
-  OneBitePizzaReviewsECRRepository:
+  KinesisStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: !Sub ${ProjectName}
+      StreamModeDetails:
+        StreamMode: ON_DEMAND
+      RetentionPeriodHours: 24
+      
+
+  ProducerLambdaECRRepository:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Sub ${ProjectName}
 
-Outputs:
-  BucketName:
-    Description: Name of the bucket
-    Value: !Ref OneBitePizzaReviewsBucket
-  RepositoryName:
-    Description: Name of the repository
-    Value: !Ref OneBitePizzaReviewsECRRepository
+  # Producer Lambda Resources
+  ProducerLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-producer-lambda-execution-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  ProducerLambdaExecutionPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+        - !Ref ProducerLambdaExecutionRole
+      PolicyName: !Sub ${ProjectName}-producer-lambda-execution-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - kinesis:PutRecord
+              - kinesis:PutRecords
+            Resource: !GetAtt KinesisStream.Arn
+
+  # Firehose Resources
+  DeliveryStreamBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${ProjectName}-delivery-stream-bucket
+
+  FirehoseKinesisSourceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: FirehoseKinesisPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kinesis:DescribeStream
+                  - kinesis:GetShardIterator
+                  - kinesis:GetRecords
+                Resource:
+                  - !GetAtt KinesisStream.Arn
+              - Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:DeleteObject
+                  - s3:GetObject
+                  - s3:GetObjectAcl
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                Resource:
+                  - !GetAtt DeliveryStreamBucket.Arn
+                  - !Sub arn:aws:s3:::${DeliveryStreamBucket}/*
+
+  KinesisFirehoseDeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub ${ProjectName}-delivery-stream
+      DeliveryStreamType: KinesisStreamAsSource
+      KinesisStreamSourceConfiguration:
+        KinesisStreamARN: !GetAtt KinesisStream.Arn
+        RoleARN: !GetAtt FirehoseKinesisSourceRole.Arn
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !GetAtt DeliveryStreamBucket.Arn
+        RoleARN: !GetAtt FirehoseKinesisSourceRole.Arn
+        Prefix: !Sub ${ProjectName}/
+        CompressionFormat: GZIP
+        BufferingHints:
+          SizeInMBs: 1
+          IntervalInSeconds: 60
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-lambda
+      PackageType: Image
+      Role: !GetAtt ProducerLambdaExecutionRole.Arn
+      Code:
+        ImageUri: !Sub ${ProducerLambdaECRRepository.RepositoryUri}:ci
+      Environment:
+        Variables:
+          KINESIS_STREAM_NAME: !Ref KinesisStream

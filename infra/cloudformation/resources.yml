@@ -117,8 +117,7 @@ Resources:
       PackageType: Image
       Role: !GetAtt ProducerLambdaExecutionRole.Arn
       Code:
-        ImageUri: !GetAtt ProducerLambdaECRRepository.RepositoryUri
+        ImageUri: !Sub ${ProducerLambdaECRRepository.RepositoryUri}:ci
       Environment:
         Variables:
           KINESIS_STREAM_NAME: !Ref KinesisStream
-          DELIVERY_STREAM_BUCKET: !Ref DeliveryStreamBucket

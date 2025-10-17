@@ -1,6 +1,9 @@
 import requests
 import boto3
 import json
+import os
+
+KINESIS_STREAM_NAME = os.getenv('KINESIS_STREAM_NAME')
 
 
 class OddsAPIHandler:
@@ -60,7 +63,7 @@ def lambda_handler(event, context) -> dict:
     ]
 
     # Send records
-    response = kinesis_client.put_records(Records=records, StreamName='sport-odds')
+    response = kinesis_client.put_records(Records=records, StreamName=KINESIS_STREAM_NAME)
 
     print('Response:')
     print(json.dumps(response, indent=2))

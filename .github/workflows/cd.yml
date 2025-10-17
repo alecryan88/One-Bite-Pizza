@@ -28,3 +28,7 @@ jobs:
 
             - name: Re-tag and Push image to ECR
               run: ./scripts/app/docker/push.sh
+
+
+            - name: Deploy CFN Lambda Resources
+              run: ./scripts/infra/deploy.sh

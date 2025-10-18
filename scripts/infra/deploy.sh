@@ -6,10 +6,8 @@ set -euo pipefail
 
 source ./scripts/shared/common.sh
 
-IMAGE_TAG=${1:-latest}
-
 aws cloudformation deploy \
     --template-file ${PWD}/infra/cloudformation/resources.yml \
     --stack-name ${PROJECT_NAME} \
-    --parameter-overrides ProjectName=${PROJECT_NAME} ImageTag=${IMAGE_TAG} \
+    --parameter-overrides ProjectName=${PROJECT_NAME} ImageTag=${GIT_SHA} \
     --capabilities CAPABILITY_NAMED_IAM

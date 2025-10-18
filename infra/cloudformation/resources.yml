@@ -125,3 +125,21 @@ Resources:
       Environment:
         Variables:
           KINESIS_STREAM_NAME: !Ref KinesisStream
+
+  ProducerLambdaScheduledRule:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: rate(5 minutes)
+      Targets:
+        - Arn: !GetAtt LambdaFunction.Arn
+          Id: "ProducerLambdaTarget"
+
+  ProducerLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LambdaFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ProducerLambdaScheduledRule.Arn
+
+          

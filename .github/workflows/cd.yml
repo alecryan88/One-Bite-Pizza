@@ -31,4 +31,4 @@ jobs:
 
 
             - name: Deploy CFN Lambda Resources
-              run: ./scripts/infra/deploy.sh
+              run: ./scripts/infra/deploy.sh ${{ env.GITHUB_SHA }}

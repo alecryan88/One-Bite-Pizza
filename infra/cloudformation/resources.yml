@@ -19,6 +19,7 @@ Resources:
       Name: !Sub ${ProjectName}
       StreamModeDetails:
         StreamMode: PROVISIONED
+      ShardCount: 4
       RetentionPeriodHours: 24
       
 

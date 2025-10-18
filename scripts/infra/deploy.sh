@@ -6,6 +6,8 @@ set -euo pipefail
 
 source ./scripts/shared/common.sh
 
+echo "Deploying resources for ${PROJECT_NAME} with image tag ${GIT_SHA}"
+
 aws cloudformation deploy \
     --template-file ${PWD}/infra/cloudformation/resources.yml \
     --stack-name ${PROJECT_NAME} \

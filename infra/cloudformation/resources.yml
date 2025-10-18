@@ -7,6 +7,10 @@ Parameters:
     Type: String
     Description: Project name
 
+  ImageTag:
+    Type: String
+    Description: Image tag
+
 Resources:
 
   KinesisStream:
@@ -117,7 +121,7 @@ Resources:
       PackageType: Image
       Role: !GetAtt ProducerLambdaExecutionRole.Arn
       Code:
-        ImageUri: !Sub ${ProducerLambdaECRRepository.RepositoryUri}:ci
+        ImageUri: !Sub ${ProducerLambdaECRRepository.RepositoryUri}:${ImageTag}
       Environment:
         Variables:
           KINESIS_STREAM_NAME: !Ref KinesisStream

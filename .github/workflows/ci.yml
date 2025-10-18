@@ -31,4 +31,4 @@ jobs:
               run: ./scripts/app/docker/build.sh && ./scripts/app/docker/push.sh
 
             - name: Deploy CFN Lambda Resources
-              run: ./scripts/infra/deploy.sh
+              run: ./scripts/infra/deploy.sh ${{ env.GITHUB_SHA }}

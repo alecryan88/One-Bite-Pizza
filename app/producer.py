@@ -2,7 +2,7 @@ import requests
 import boto3
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 KINESIS_STREAM_NAME = os.getenv('KINESIS_STREAM_NAME')
 
@@ -56,7 +56,7 @@ def lambda_handler(event, context) -> dict:
 
     records = []
     for event in events:
-        event['processing_time'] = datetime.now().isoformat()
+        event['processing_time'] = datetime.now(timezone.utc).isoformat()
         records.append(
             {
                 'Data': json.dumps(event),  # must be bytes/string

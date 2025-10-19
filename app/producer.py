@@ -2,6 +2,7 @@ import requests
 import boto3
 import json
 import os
+from datetime import datetime
 
 KINESIS_STREAM_NAME = os.getenv('KINESIS_STREAM_NAME')
 
@@ -53,14 +54,15 @@ def lambda_handler(event, context) -> dict:
     events = main(event)
     kinesis_client = boto3.client('kinesis')
 
-    # Batch the events using put_records
-    records = [
-        {
-            'Data': json.dumps(event),  # must be bytes/string
-            'PartitionKey': str(event['sport_key']),  # must be string,
-        }
-        for event in events
-    ]
+    records = []
+    for event in events:
+        event['processing_time'] = datetime.now().isoformat()
+        records.append(
+            {
+                'Data': json.dumps(event),  # must be bytes/string
+                'PartitionKey': str(event['sport_key']),  # must be string,
+            }
+        )
 
     # Send records
     response = kinesis_client.put_records(Records=records, StreamName=KINESIS_STREAM_NAME)

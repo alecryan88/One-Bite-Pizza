@@ -129,7 +129,7 @@ Resources:
   ProducerLambdaScheduledRule:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: rate(5 minutes)
+      ScheduleExpression: rate(1 day)
       Targets:
         - Arn: !GetAtt LambdaFunction.Arn
           Id: "ProducerLambdaTarget"

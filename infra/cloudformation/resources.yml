@@ -143,3 +143,41 @@ Resources:
       SourceArn: !GetAtt ProducerLambdaScheduledRule.Arn
 
           
+  # Cross-account access role for Unity Catalog and external Firehose
+  CrossAccountAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-cross-account-access-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                - arn:aws:iam::414351767826:role/unity-catalog-prod-UCMasterRole-14S5ZJVKOTYTL
+                - arn:aws:iam::820242944968:role/sport-odds-FirehoseKinesisSourceRole-StjVaBt9367j
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                sts:ExternalId: 8e2a37f9-26f1-4771-afc0-592e3061c967
+      Policies:
+        - PolicyName: CrossAccountAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - kinesis:DescribeStream
+                  - kinesis:GetShardIterator
+                  - kinesis:GetRecords
+                  - kinesis:PutRecord
+                  - kinesis:PutRecords
+                Resource: !GetAtt KinesisStream.Arn
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !GetAtt DeliveryStreamBucket.Arn
+                  - !Sub arn:aws:s3:::${DeliveryStreamBucket}/*

@@ -4,7 +4,7 @@ import os
 
 from app.odds import OddsAPIHandler
 
-KINESIS_STREAM_NAME = os.getenv('KINESIS_STREAM_NAME')
+KINESIS_STREAM_NAME = 'sport-odds'
 ODDS_API_KEY = os.getenv('ODDS_API_KEY')
 
 

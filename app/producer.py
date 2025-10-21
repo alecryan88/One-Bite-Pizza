@@ -27,12 +27,12 @@ def lambda_handler(event, context) -> dict:
 
     records = []
 
-    for event in events:
-        event['processing_time'] = datetime.now(timezone.utc).isoformat()
+    for odds_event in events:
+        odds_event['processing_time'] = datetime.now(timezone.utc).isoformat()
         records.append(
             {
-                'Data': json.dumps(event),  # must be bytes/string
-                'PartitionKey': str(event['sport_key']),  # must be string,
+                'Data': json.dumps(odds_event),  # must be bytes/string
+                'PartitionKey': str(odds_event['sport_key']),  # must be string,
             }
         )
 
@@ -42,7 +42,7 @@ def lambda_handler(event, context) -> dict:
     print('Response:')
     print(json.dumps(response, indent=2))
 
-    return {'statusCode': 200, 'example event': event}
+    return {'statusCode': 200, 'body': f'Processed {len(records)} records'}
 
 
 if __name__ == '__main__':

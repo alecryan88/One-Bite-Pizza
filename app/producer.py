@@ -1,7 +1,6 @@
 import boto3
 import json
 import os
-from datetime import datetime, timezone
 
 from app.odds import OddsAPIHandler
 
@@ -28,7 +27,6 @@ def lambda_handler(event, context) -> dict:
     records = []
 
     for odds_event in events:
-        odds_event['processing_time'] = datetime.now(timezone.utc).isoformat()
         records.append(
             {
                 'Data': json.dumps(odds_event),  # must be bytes/string

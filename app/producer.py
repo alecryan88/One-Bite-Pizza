@@ -22,6 +22,7 @@ def main(event) -> list[dict]:
 
 def lambda_handler(event, context) -> dict:
     events = main(event)
+
     kinesis_client = boto3.client('kinesis')
 
     records = []

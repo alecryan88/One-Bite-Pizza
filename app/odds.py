@@ -6,13 +6,22 @@ class OddsAPIHandler:
         self.url = 'https://api.the-odds-api.com'
         self.params = {'apiKey': api_key}
 
+    def make_request(self, path: str, params: dict) -> dict:
+        response = requests.get(self.url + path, params=params)
+        print(f'Request URL: {response.url}')
+        print(f'Status Code: {response.status_code}')
+        if response.status_code != 200:
+            raise Exception(
+                f'Error making request to {self.url + path}: {response.status_code} {response.text}'
+            )
+        return response.json()
+
     def get_sports(self) -> list[dict]:
         """Returns a list of in-season sport objects. The sport key can be used as the sport parameter in other endpoints.
         This endpoint does not count against the usage quota.
         """
         path = '/v4/sports/'
-        response = requests.get(self.url + path, params=self.params)
-        return response.json()
+        return self.make_request(path, self.params)
 
     def get_odds(self, sport: str, regions: str, markets: str) -> list[dict]:
         """Returns a list of upcoming and live games with recent odds for a given sport,
@@ -20,13 +29,8 @@ class OddsAPIHandler:
         """
         path = f'/v4/sports/{sport}/odds'
 
-        params = {'regions': regions, 'markets': markets}
+        params = self.params.copy()
+        params.update({'regions': regions, 'markets': markets})
 
-        self.params.update(params)
-
-        response = requests.get(self.url + path, params=self.params)
-
-        print(response.url)
-
-        print(response.status_code)
-        return response.json()
+        data = self.make_request(path, params)
+        return data

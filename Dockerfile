@@ -31,4 +31,5 @@ COPY --from=builder ${LAMBDA_TASK_ROOT} ${LAMBDA_TASK_ROOT}
 
 # Copy the application code.
 COPY ./app ${LAMBDA_TASK_ROOT}/app
+WORKDIR ${LAMBDA_TASK_ROOT}
 CMD [ "app.producer.lambda_handler" ]
